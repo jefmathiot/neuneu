@@ -3,6 +3,7 @@
 require "neuronface/version"
 require "neuronface/vector"
 require "neuronface/activations"
+require "neuronface/losses"
 require "neuronface/layers"
 require "neuronface/optimizers"
 require "neuronface/neurons"
