@@ -2,6 +2,8 @@
 
 Not-for-production & slow deep learning with Ruby.
 
+![Ruby Build](https://github.com/jefmathiot/neurony-mc-neuronface/actions/workflows/main.yml/badge.svg)
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
