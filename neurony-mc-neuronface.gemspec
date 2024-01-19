@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Deep learning for fun."
   spec.homepage = "https://github.com/jefmathiot/neurony-mc-neuronface"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
