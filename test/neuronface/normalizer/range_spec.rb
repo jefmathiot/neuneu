@@ -33,5 +33,12 @@ describe Neuronface::Normalizer::Range do
       _(normalizer.revert(0)).must_equal 0
       _(normalizer.revert(1)).must_equal 100
     end
+
+    it "avoids division by zero when inputs are identical" do
+      normalizer = Neuronface::Normalizer::Range.new([1, 1])
+      _(normalizer.revert(-1)).must_equal 1.0
+      _(normalizer.revert(0)).must_equal 1.0
+      _(normalizer.revert(1)).must_equal 1.0
+    end
   end
 end
