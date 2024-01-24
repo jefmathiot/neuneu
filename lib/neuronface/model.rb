@@ -5,7 +5,7 @@ module Neuronface
     attr_reader :layers, :loss
 
     def initialize(opts)
-      @loss = opts[:loss]
+      @loss = Losses.get(opts[:loss]).new
       @layers = []
     end
 
