@@ -5,26 +5,38 @@ module Neuronface
     class Simple
       Optimizers.register_as(:simple, self)
 
-      def initialize(model, opts)
+      def initialize(model, opts = {})
         @model = model
         @epochs = opts[:epochs] || 1
+        @batch_size = opts[:batch_size]
         @learning_rate = opts[:learning_rate] || 0.5
       end
 
-      def run(examples)
-        { loss: [] }.tap do |history|
+      def run(dataset)
+        with_history do |history|
           @epochs.times do
-            losses = []
-            examples.each do |example|
-              losses << forward(example)
-              backward(example.last)
-            end
+            losses = perform_epoch(dataset)
             history[:loss] << (losses.inject(:+) / losses.size)
           end
         end
       end
 
       private
+
+      def perform_epoch(dataset)
+        [].tap do |losses|
+          dataset.all do |examples|
+            examples.each do |example|
+              losses << forward(example)
+              backward(example)
+            end
+          end
+        end
+      end
+
+      def with_history(&block)
+        { loss: [] }.tap(&block)
+      end
 
       def total_output_loss(example)
         @model.loss.total_loss(@model.layers.last.neurons.map(&:activation), example.last)
@@ -35,8 +47,8 @@ module Neuronface
         total_output_loss(example)
       end
 
-      def backward(targets)
-        compute_deltas(targets)
+      def backward(example)
+        compute_deltas(example.last)
         adjust_parameters
       end
 

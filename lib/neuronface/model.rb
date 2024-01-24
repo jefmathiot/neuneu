@@ -19,10 +19,10 @@ module Neuronface
       { layers: @layers.map(&:to_h) }
     end
 
-    def fit(examples, optimizer, opts)
+    def fit(dataset, optimizer, opts)
       compile!
       optimizer = Optimizers.get(optimizer).new(self, opts)
-      optimizer.run(examples)
+      optimizer.run(dataset)
     end
 
     def feed(inputs)
