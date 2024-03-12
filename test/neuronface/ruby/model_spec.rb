@@ -9,9 +9,9 @@ describe Neuronface::Model do
   end
 
   describe "with a backend mock" do
-    %i[backend dataset].each { |object|
+    %i[backend dataset].each do |object|
       let(object) { Minitest::Mock.new }
-    }
+    end
     let(:model) { Neuronface::Model.new }
 
     before do

@@ -2,7 +2,6 @@
 
 module Neuronface
   class Model
-
     def initialize(backend: :ruby)
       @backend = Object.const_get("Neuronface::#{backend.capitalize}::Backend").new
     end
