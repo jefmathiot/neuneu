@@ -17,7 +17,7 @@ module Neuronface
       def fit(dataset, loss:, epochs: 1, batch_size: 1, optimizer: :sgd)
         build_cache
         before_training!
-        BackPropagator.new(self, optimizer: optimizer).run(dataset, epochs, batch_size, loss)
+        BackPropagator.new(self, optimizer).run(dataset, epochs, batch_size, loss)
         @history
       end
 

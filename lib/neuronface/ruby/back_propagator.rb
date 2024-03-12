@@ -11,7 +11,7 @@ module Neuronface
 
       def_delegators :@backend, :layers, :active_layers, :hidden_layers, :output_layer, :cache, :history
 
-      def initialize(backend, optimizer: :vanilla)
+      def initialize(backend, optimizer)
         @backend = backend
         @optimizer = Builder.optimizer(optimizer)
       end
