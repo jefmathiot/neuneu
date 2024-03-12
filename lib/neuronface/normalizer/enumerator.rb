@@ -8,11 +8,11 @@ module Neuronface
       end
 
       def convert(input)
-        input.each_with_index.map { |value, index| @normalizers[index].convert(value) }
+        input.map.with_index { |value, index| @normalizers[index].convert(value) }
       end
 
       def revert(output)
-        output.each_with_index.map { |value, index| @normalizers[index].revert(value) }
+        output.map.with_index { |value, index| @normalizers[index].revert(value) }
       end
     end
   end

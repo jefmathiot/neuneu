@@ -2,49 +2,33 @@
 
 module Neuronface
   class Model
-    attr_reader :layers, :loss
 
-    def initialize(opts)
-      @loss = Losses.get(opts[:loss]).new
-      @layers = []
+    def initialize(backend: :ruby)
+      @backend = Object.const_get("Neuronface::#{backend.capitalize}::Backend").new
     end
 
-    def append(type, neurons, opts = {})
-      layer = Layers.get(type).new(self, @layers.size, neurons, opts)
-      @layers << layer
+    def append(*args)
+      @backend.append(*args)
       self
     end
 
-    def to_h
-      { layers: @layers.map(&:to_h) }
+    def fit(dataset, *args)
+      @inputs_normalizer = dataset.inputs_normalizer
+      @outputs_normalizer = dataset.outputs_normalizer
+      @backend.fit(dataset, *args)
     end
 
-    def fit(dataset, optimizer, opts)
-      compile!
-      optimizer = Optimizers.get(optimizer).new(self, opts)
-      optimizer.run(dataset)
+    def predict(features)
+      outputs = @backend.predict(features.map { |feature| @inputs_normalizer.convert(feature) })
+      outputs.transpose.map { |prediction| @outputs_normalizer.revert(prediction) }
     end
 
-    def feed(inputs)
-      layers.first.neurons.each do |neuron|
-        neuron.forward(inputs)
-      end
-      layers.drop(1).each do |layer|
-        layer.neurons.each(&:forward)
-      end
+    def history
+      @backend.history
     end
 
-    def predict(inputs)
-      feed(inputs)
-      layers.last.neurons.map(&:activation)
-    end
-
-    private
-
-    def compile!
-      layers.each do |layer|
-        layer.respond_to?(:build_parameters) && layer.build_parameters
-      end
+    def plot(metrics: [], **opts)
+      Plot.plot(history, metrics, **opts)
     end
   end
 end

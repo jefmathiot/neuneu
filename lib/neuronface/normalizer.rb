@@ -6,4 +6,4 @@ end
 
 require "neuronface/normalizer/enumerator"
 require "neuronface/normalizer/identity"
-require "neuronface/normalizer/range"
+require "neuronface/normalizer/scale"

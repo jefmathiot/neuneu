@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-require "neuronface/version"
-require "neuronface/vector"
-require "neuronface/activations"
-require "neuronface/losses"
-require "neuronface/normalizer"
-require "neuronface/datasets"
-require "neuronface/layers"
-require "neuronface/optimizers"
-require "neuronface/neurons"
+require "neuronface/dataset"
 require "neuronface/model"
+require "neuronface/normalizer"
+require "neuronface/plot"
+require "neuronface/ruby"
+require "neuronface/version"
 
 module Neuronface
   class Error < StandardError; end
