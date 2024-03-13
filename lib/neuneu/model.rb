@@ -6,15 +6,15 @@ module Neuneu
       @backend = Object.const_get("Neuneu::#{backend.capitalize}::Backend").new
     end
 
-    def append(*args)
-      @backend.append(*args)
+    def append(*args, **kwargs)
+      @backend.append(*args, **kwargs)
       self
     end
 
-    def fit(dataset, *args)
+    def fit(dataset, *args, **kwargs)
       @inputs_normalizer = dataset.inputs_normalizer
       @outputs_normalizer = dataset.outputs_normalizer
-      @backend.fit(dataset, *args)
+      @backend.fit(dataset, *args, **kwargs)
     end
 
     def predict(features)

@@ -11,10 +11,11 @@ module Neuneu
 
       def_delegator :@inputs_normalizer, :convert
       def_delegator :@outputs_normalizer, :revert
-      def_delegator :@examples, :size
 
-      def initialize(examples, transpose: false)
-        store_examples(examples, transpose)
+      def initialize(training, validation = nil, transpose: false)
+        initialize_store
+        store_examples(:training, training, transpose)
+        store_examples(:validation, validation, transpose) if validation
         @shuffle = false
         @inputs_normalizer = Normalizer::Identity.new
         @outputs_normalizer = Normalizer::Identity.new
@@ -26,30 +27,48 @@ module Neuneu
       end
 
       def normalize!
-        @inputs_normalizer = build_normalizer(@features)
-        @outputs_normalizer = build_normalizer(@labels)
-        @features = @features.map { |example| @inputs_normalizer.convert(example) }
-        @labels = @labels.map { |label| @outputs_normalizer.convert(label) }
+        @inputs_normalizer = build_normalizer(features)
+        @outputs_normalizer = build_normalizer(labels)
+        %i[training validation].each do |purpose|
+          store(purpose, :features, features(purpose)&.map { |example| @inputs_normalizer.convert(example) })
+          store(purpose, :labels, labels(purpose)&.map { |example| @outputs_normalizer.convert(example) })
+        end
         self
       end
 
-      def batch(size)
+      def each_batch(size)
         indices.each_slice(size) do |indices|
-          yield @features.values_at(*indices), @labels.values_at(*indices)
+          yield features.values_at(*indices), labels.values_at(*indices)
         end
+      end
+
+      def features(purpose = :training)
+        @store.dig(purpose, :features)
+      end
+
+      def labels(purpose = :training)
+        @store.dig(purpose, :labels)
       end
 
       private
 
-      def store_examples(examples, transpose)
+      def initialize_store
+        @store = { training: {}, validation: {} }
+      end
+
+      def store_examples(purpose, examples, transpose)
         examples.send(transpose ? :transpose : :itself).tap do |ex|
-          @features = ex.first
-          @labels = ex.last
+          store(purpose, :features, ex.first)
+          store(purpose, :labels, ex.last)
         end
       end
 
+      def store(purpose, name, value)
+        @store[purpose][name] = value
+      end
+
       def indices
-        @indices ||= Array.new(@features.size) { |i| i }
+        @indices ||= Array.new(features.size) { |i| i }
         return @indices unless @shuffle
 
         @indices.shuffle

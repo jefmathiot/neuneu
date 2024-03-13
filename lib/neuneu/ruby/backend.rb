@@ -18,7 +18,7 @@ module Neuneu
         build_cache
         before_training!
         BackPropagator.new(self, optimizer).run(dataset, epochs, batch_size, loss)
-        @history
+        self
       end
 
       def forward(features, for_training)

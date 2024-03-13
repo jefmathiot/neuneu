@@ -18,18 +18,25 @@ module Neuneu
 
       def run(dataset, epochs, batch_size, loss)
         epochs.times do |_epoch|
-          accumulator = epoch(dataset, batch_size, loss)
-          history.append :training, accumulator.finalize!.total_loss
+          history.append :training, epoch(dataset, batch_size, loss).finalize!.total_loss
+          history.append :validation, validate(dataset, loss).finalize!.total_loss if dataset.features(:validation)
         end
         history
       end
 
       private
 
+      def validate(dataset, loss)
+        with_loss(loss) do |accumulator|
+          forward(dataset.features(:validation))
+          accumulator.accumulate!(cache.activations(layers.last.index), dataset.labels(:validation), true)
+        end
+      end
+
       def epoch(dataset, batch_size, loss)
-        Builder.loss(loss).tap do |accumulator|
-          dataset.batch(batch_size) do |features, labels|
-            forward(features)
+        with_loss(loss) do |accumulator|
+          dataset.each_batch(batch_size) do |features, labels|
+            forward(features, training: true)
             cache.average_derivatives!(features.size)
             accumulator.accumulate!(cache.activations(layers.last.index), labels, true)
             backpropagate(accumulator)
@@ -37,9 +44,13 @@ module Neuneu
         end
       end
 
-      def forward(features)
+      def with_loss(loss, &block)
+        Builder.loss(loss).tap(&block)
+      end
+
+      def forward(features, training: false)
         cache.reset!
-        backend.forward(features, true)
+        backend.forward(features, training)
       end
 
       def backpropagate(accumulator)
