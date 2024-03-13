@@ -9,7 +9,7 @@ module Neuronface
           @w_per_neuron = previous_layer.size
           @transfer_function = Builder.transfer(transfer)
           @kernel_initializer = Builder.kernel_initializer(
-            kernel_initializer || kernel_initializer_opts(@transfer_function.default_kernel_initializer)
+            **kernel_initializer_opts(kernel_initializer || @transfer_function.default_kernel_initializer)
           )
         end
 

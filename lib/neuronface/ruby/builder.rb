@@ -4,14 +4,19 @@ module Neuronface
   module Ruby
     module Builder
       class << self
-        %i[layer kernel_initializer optimizer loss transfer].each do |symbol|
-          define_method(symbol) do |type, *args|
-            if type.is_a?(Hash)
-              type = type.keys.first.tap do |k|
-                args << type[k]
-              end
+        def layer(type, *args, **kwargs)
+          resolve_class("Neuronface::Ruby::Layer", type)&.new(*args, **kwargs)
+        end
+
+        %i[kernel_initializer optimizer loss transfer].each do |symbol|
+          define_method(symbol) do |*args, **kwargs|
+            if kwargs.keys.any?
+              type = kwargs.keys.first
+              kwargs = kwargs[type]
+            else
+              type = args.shift
             end
-            resolve_class("Neuronface::Ruby::#{identifier_to_class(symbol)}", type)&.new(*args)
+            resolve_class("Neuronface::Ruby::#{identifier_to_class(symbol)}", type)&.new(*args, **kwargs)
           end
         end
 

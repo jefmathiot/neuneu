@@ -4,7 +4,7 @@ module Neuronface
   module Ruby
     module KernelInitializer
       class RandomNormal
-        def initialize(mean:, std_deviation:)
+        def initialize(mean: 0, std_deviation: 1)
           @mean = mean
           @std_deviation = std_deviation
           @value_swap = false
