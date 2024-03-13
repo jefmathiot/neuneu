@@ -18,7 +18,7 @@ module Neuneu
           size.times do |neuron|
             @cache.weights_for(index, neuron, initializer.call(@w_per_neuron))
           end
-          @cache.biases(index, initializer.call(size))
+          @cache.biases(index, initializer.call(@w_per_neuron))
         end
 
         def weighted?
