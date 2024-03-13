@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    neurony-mc-neuronface (0.1.0)
+    neuneu (0.1.0)
       unicode_plot
 
 GEM
@@ -93,13 +93,12 @@ DEPENDENCIES
   guard
   guard-minitest
   minitest (~> 5.0)
-  neurony-mc-neuronface!
+  neuneu!
   rake (~> 13.0)
   rubocop (~> 1.21)
   rubocop-minitest
   rubocop-rake
   simplecov
-  unicode_plot
 
 BUNDLED WITH
    2.4.17

@@ -1,22 +1,20 @@
-# Neurony McNeuronface : Deep learning for fun
+# Neuneu : a modest Deep Learning framework for Ruby
 
-Not-for-production & slow deep learning with Ruby.
-
-![Ruby Build](https://github.com/jefmathiot/neurony-mc-neuronface/actions/workflows/main.yml/badge.svg)
+![Ruby Build](https://github.com/jefmathiot/neuneu/actions/workflows/main.yml/badge.svg)
 
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
 
-  $ bundle add neurony-mc-neuronface
+  $ bundle add neuneu
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-  $ gem install neurony-mc-neuronface
+  $ gem install neuneu
 
 ## Usage
 
-### Training a basic model
+### Training a (very) basic model
 
 The first step is to create a dataset to handle our _training examples_. Here, we use the `Memory`
 implementation which wraps an array of examples.
@@ -26,7 +24,7 @@ Here, each example consists in a value of temperature in Celsius degrees as the 
 Fahrenheit degrees as the output:
 
 ```ruby
-require "neuronface"
+require "neuneu"
 
 data = [
   [[-40.0], [-40.0]],
@@ -40,56 +38,36 @@ data = [
 ```
 
 We normalize the inputs and outputs so that their values are shifted to the 0-1 range. We also
-tell Neuronface to shuffle values at each training _epoch_ so that there's no influence of the order of the examples on the training process:
+tell Neuneu to shuffle values at each training _epoch_ so that there's no influence of the order of the examples on the training process:
 
 ```ruby
-dataset = Neuronface::Datasets.get(:memory)
-                              .new(data)
-                              .normalize!
-                              .shuffle!
+dataset = Neuneu::Dataset::Memory.new(data, transpose: true)
+                                 .normalize!
+                                 .shuffle!
 ```
 
-Now we create a single-layer, single-neuron perceptron _model_, and train it on all examples during 20
-_epochs_. We use the _mean squared error_ (MSE) _loss function_ and _rectified linear unit_ (ReLU) as the
-activation function:
+Now we create a single-layer, single-neuron perceptron _model_, and train it on all examples during 50
+_epochs_. We use the _mean squared error_ (MSE) _loss function_ and _"leaky" rectified linear unit_ (LeakyReLU) as the
+transfer function:
 
 ```ruby
-model = Neuronface::Model.new(loss: :squared_error)
-                         .append(:input, 1)
-                         .append(:dense, 1, activation: :relu)
-history = model.fit(dataset, :simple, epochs: 20)
+model = Neuneu::Model.new.append(:input, 1)
+                         .append(:dense, 1, transfer: :leaky_relu)
+model.fit(dataset, epochs: 50, loss: :mean_squared_error)
+```
+
+We can show the evolution of the training loss across epochs in the terminal:
+
+```ruby
+model.plot(width: 100)
 ```
 
 Now that our model is trained we can make a prediction on novel/unknown input:
 
 ```ruby
-puts dataset.outputs_normalizer.revert(model.predict(dataset.inputs_normalizer.convert([100])))
+model.predict([[100]])
 # => 211.7616137915528
 ```
-
-We'd like to plot the training loss across the epochs to see how your model is fitting to the
-training data, for example using [Gruff](https://github.com/topfunky/gruff):
-
-```ruby
-def plot_labels(history)
-  label_count = [10, history[:loss].size].min
-  label_count.times
-             .map { |i| i * history[:loss].size / label_count }
-             .each_with_object({}) { |value, hash| hash[value] = value.to_s }
-end
-
-def plot(history)
-  g = Gruff::Line.new("1200x600")
-  g.labels = plot_labels(history)
-  g.title = "Model training"
-  g.data "Training loss", history[:loss]
-  g.write "training.png"
-end
-
-plot(history)
-```
-
-![Perceptron training loss](resources/perceptron-training-loss.png)
 
 ## Development
 
@@ -99,7 +77,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/jefmathiot/neurony-mc-neuronface.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jefmathiot/neuneu.
 
 ## License
 
