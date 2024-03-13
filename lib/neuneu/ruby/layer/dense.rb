@@ -30,15 +30,6 @@ module Neuneu
           @transfer_function.call(net_inputs(batch), activations, for_training ? @cache.derivatives(index) : nil)
         end
 
-        def adjust_parameters(deltas, activations)
-          @biases.each_index { |i| @biases[i] -= deltas[i] }
-          size.times do |i| # neuron
-            @weights_per_neuron.times do |j| # weight
-              @weights[(i * @weights_per_neuron) + j] -= deltas[i] * activations[j]
-            end
-          end
-        end
-
         private
 
         def kernel_initializer_opts(initializer)

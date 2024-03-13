@@ -17,8 +17,6 @@ module Neuneu
 
         def before_training!; end
 
-        def adjust_parameters(_deltas, _activations); end
-
         def weighted?
           false
         end

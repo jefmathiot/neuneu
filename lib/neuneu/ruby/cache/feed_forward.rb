@@ -31,6 +31,12 @@ module Neuneu
           @biases.dig(layer, neuron)
         end
 
+        def weights(layer, value = nil)
+          return @weights[layer] = value if value
+
+          @weights[layer]
+        end
+
         def weights_for(layer, neuron, value = nil)
           return @weights[layer][neuron] = value if value
 
